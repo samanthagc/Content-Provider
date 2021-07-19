@@ -27,19 +27,19 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         initVariables()
         initListeners()
         initAdapter()
+
+        LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> =
         CursorLoader(this, URI_NOTES, null, null, null, TITLE_NOTES)
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        if (data != null) {
-
-        }
+        if (data != null) { adapter.setCursor(data) }
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        TODO("Not yet implemented")
+        adapter.setCursor(null)
     }
 
     private fun initVariables() {
@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         adapter = NotesAdapter(object : NoteClickedListener{
             override fun noteClickedItem(cursor: Cursor) {
                 val id = cursor.getLong(cursor.getColumnIndex(_ID))
+                val fragment = NotesDetailFragment.newInstance(id)
+                fragment.show(supportFragmentManager, "dialog")
             }
 
             override fun noteRemoveItem(cursor: Cursor?) {
@@ -59,7 +61,9 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun initListeners() {
-        noteAdd.setOnClickListener {  }
+        noteAdd.setOnClickListener {
+            NotesDetailFragment().show(supportFragmentManager, "dialog")
+        }
     }
 
     private fun initAdapter() {
